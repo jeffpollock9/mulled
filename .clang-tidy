@@ -1,0 +1,18 @@
+Checks: >
+  -*,
+  bugprone-*,
+  clang-analyzer-*,
+  modernize-*,
+  performance-*,
+  -bugprone-crtp-constructor-accessibility,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-implicit-widening-of-multiplication-result,
+  -readability-magic-numbers,
+  -readability-identifier-length,
+  -modernize-use-nodiscard,
+  -modernize-use-trailing-return-type,
+  -modernize-avoid-c-arrays,
+  -modernize-use-designated-initializers,
+  -modernize-use-ranges
+
+HeaderFilterRegex: 'include/mulled/.*'

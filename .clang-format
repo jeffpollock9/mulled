@@ -1,0 +1,12 @@
+ColumnLimit: 120
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+AllowShortFunctionsOnASingleLine: false
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+PointerAlignment: Left
+BinPackArguments: false
+BinPackParameters: false
+AlwaysBreakTemplateDeclarations: Yes
+AlignAfterOpenBracket: Align
