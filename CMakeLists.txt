@@ -37,7 +37,7 @@ target_include_directories(mulled INTERFACE
     $<INSTALL_INTERFACE:include>
 )
 target_compile_options(mulled INTERFACE
-    $<$<CONFIG:Release>:-march=native>
+    $<$<CONFIG:Release>:-march=native -ffast-math>
     -fdiagnostics-color=always
     -Werror -Wall -Wextra -Wpedantic -Wfloat-conversion -Wshadow -Wdouble-promotion
 )
@@ -45,6 +45,9 @@ target_compile_features(mulled INTERFACE cxx_std_26)
 target_link_libraries(mulled INTERFACE Eigen3::Eigen PkgConfig::OPENBLAS std::mdspan)
 
 add_library(mulled_ispc STATIC src/matmul.ispc)
+target_compile_options(mulled_ispc PRIVATE
+    $<$<CONFIG:Release>:--opt=fast-math>
+)
 target_include_directories(mulled_ispc INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/mulled_ispc.dir>)
 target_link_libraries(mulled_ispc INTERFACE mulled)
 
