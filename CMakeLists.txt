@@ -45,6 +45,7 @@ target_compile_features(mulled INTERFACE cxx_std_26)
 target_link_libraries(mulled INTERFACE Eigen3::Eigen PkgConfig::OPENBLAS std::mdspan)
 
 add_library(mulled_ispc STATIC src/matmul.ispc)
+target_include_directories(mulled_ispc INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/mulled_ispc.dir>)
 target_link_libraries(mulled_ispc INTERFACE mulled)
 
 enable_testing()

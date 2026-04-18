@@ -2,8 +2,7 @@
 
 #include <cblas.h>
 #include <experimental/mdspan>
-
-#include <mulled/matmul.hpp>
+#include <matmul_ispc.h>
 
 namespace mulled {
 
@@ -58,15 +57,12 @@ inline void matmul_v2(matrix_view A, matrix_view B, mutable_matrix_view C) {
     }
 }
 
-extern "C" void matmul_v3_ispc(const double A[], const double B[], double C[], int rows, int cols, int inner);
-extern "C" void matmul_v4_ispc(const double A[], const double B[], double C[], int rows, int cols, int inner);
-
 inline void matmul_v3(matrix_view A, matrix_view B, mutable_matrix_view C) {
-    matmul_v3_ispc(A.data_handle(), B.data_handle(), C.data_handle(), A.extent(0), B.extent(1), A.extent(1));
+    ispc::matmul_v3_ispc(A.data_handle(), B.data_handle(), C.data_handle(), A.extent(0), B.extent(1), A.extent(1));
 }
 
 inline void matmul_v4(matrix_view A, matrix_view B, mutable_matrix_view C) {
-    matmul_v4_ispc(A.data_handle(), B.data_handle(), C.data_handle(), A.extent(0), B.extent(1), A.extent(1));
+    ispc::matmul_v4_ispc(A.data_handle(), B.data_handle(), C.data_handle(), A.extent(0), B.extent(1), A.extent(1));
 }
 
 } // namespace mulled
