@@ -65,3 +65,29 @@ TEST_CASE_METHOD(Fixture, "matmul_v4 matches Eigen", "[matmul]") {
     mulled::matmul_v4(a_view(), b_view(), c_view());
     check();
 }
+
+TEST_CASE_METHOD(Fixture, "matmul_v5 matches Eigen", "[matmul]") {
+    mulled::matmul_v5(a_view(), b_view(), c_view());
+    check();
+}
+
+TEST_CASE_METHOD(Fixture, "matmul_v6 matches Eigen", "[matmul]") {
+    mulled::matmul_v6(a_view(), b_view(), c_view());
+    check();
+}
+
+TEST_CASE_METHOD(Fixture, "matmul_v7 matches Eigen", "[matmul]") {
+    mulled::matmul_v7(a_view(), b_view(), c_view());
+    check();
+}
+
+TEST_CASE_METHOD(Fixture, "matmul_v8 matches Eigen", "[matmul]") {
+    mulled::matmul_v8(a_view(), b_view(), c_view());
+    check();
+}
+
+TEST_CASE_METHOD(Fixture, "matmul_v9 matches Eigen", "[matmul]") {
+    mulled::matmul_v9(a_view(), b_view(), c_view());
+    check();
+}
+

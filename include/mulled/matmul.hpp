@@ -65,4 +65,24 @@ inline void matmul_v4(matrix_view A, matrix_view B, mutable_matrix_view C) {
     ispc::matmul_v4_ispc(A.data_handle(), B.data_handle(), C.data_handle(), A.extent(0), B.extent(1), A.extent(1));
 }
 
+inline void matmul_v5(matrix_view A, matrix_view B, mutable_matrix_view C) {
+    ispc::matmul_v5_ispc(A.data_handle(), B.data_handle(), C.data_handle(), A.extent(0), B.extent(1), A.extent(1));
+}
+
+inline void matmul_v6(matrix_view A, matrix_view B, mutable_matrix_view C) {
+    ispc::matmul_v6_ispc(A.data_handle(), B.data_handle(), C.data_handle(), A.extent(0), B.extent(1), A.extent(1));
+}
+
+inline void matmul_v7(matrix_view A, matrix_view B, mutable_matrix_view C) {
+    ispc::matmul_v7_ispc(A.data_handle(), B.data_handle(), C.data_handle(), A.extent(0), B.extent(1), A.extent(1));
+}
+
+inline void matmul_v8(matrix_view A, matrix_view B, mutable_matrix_view C) {
+    ispc::matmul_v8_ispc(A.data_handle(), B.data_handle(), C.data_handle(), A.extent(0), B.extent(1), A.extent(1));
+}
+
+inline void matmul_v9(matrix_view A, matrix_view B, mutable_matrix_view C) {
+    ispc::matmul_v9_ispc(A.data_handle(), B.data_handle(), C.data_handle(), A.extent(0), B.extent(1), A.extent(1));
+}
+
 } // namespace mulled

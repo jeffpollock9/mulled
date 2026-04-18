@@ -1,96 +1,142 @@
+#include <cstdlib>
+
 #include <Eigen/Dense>
 #include <benchmark/benchmark.h>
 
 #include <mulled/matmul.hpp>
 
-using Matrix = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+struct Fixture : benchmark::Fixture {
+    using Matrix = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
-constexpr int N = 1234;
+    int n = 0;
+    Matrix A;
+    Matrix B;
+    Matrix C;
 
-struct Matrices {
-    Matrix A = Matrix::Random(N, N);
-    Matrix B = Matrix::Random(N, N);
-    Matrix C = Matrix(N, N);
+    void SetUp(const benchmark::State& state) override {
+        n = static_cast<int>(state.range(0));
+        std::srand(42);
+        A = Matrix::Random(n, n);
+        B = Matrix::Random(n, n);
+        C = Matrix(n, n);
+    }
 
     mulled::matrix_view a_view() const {
-        return mulled::matrix_view(A.data(), N, N);
+        return mulled::matrix_view(A.data(), n, n);
     }
 
     mulled::matrix_view b_view() const {
-        return mulled::matrix_view(B.data(), N, N);
+        return mulled::matrix_view(B.data(), n, n);
     }
 
     mulled::mutable_matrix_view c_view() {
-        return mulled::mutable_matrix_view(C.data(), N, N);
+        return mulled::mutable_matrix_view(C.data(), n, n);
+    }
+
+    void add_counters(benchmark::State& state) {
+        state.counters["test1"] = C(0, 0);
+        state.counters["test2"] = C(std::min(13, n - 1), std::min(42, n - 1));
     }
 };
 
-Matrices& matrices() {
-    static Matrices instance;
-    return instance;
-}
+#define SIZES RangeMultiplier(2)->Range(128, 2048)
 
-void add_counters(benchmark::State& state, const Matrix& C) {
-    state.counters["test1"] = C(0, 0);
-    state.counters["test2"] = C(13, 42);
-}
-
-void BM_matmul_blas(benchmark::State& state) {
-    auto& m = matrices();
+BENCHMARK_DEFINE_F(Fixture, matmul_blas)(benchmark::State& state) {
     for (auto _ : state) {
-        mulled::matmul_blas(m.a_view(), m.b_view(), m.c_view());
-        benchmark::DoNotOptimize(m.C.data());
+        mulled::matmul_blas(a_view(), b_view(), c_view());
+        benchmark::DoNotOptimize(C.data());
     }
-    add_counters(state, m.C);
+    add_counters(state);
 }
-BENCHMARK(BM_matmul_blas);
+BENCHMARK_REGISTER_F(Fixture, matmul_blas)->SIZES;
 
-void BM_matmul_eigen(benchmark::State& state) {
-    auto& m = matrices();
+BENCHMARK_DEFINE_F(Fixture, matmul_eigen)(benchmark::State& state) {
     for (auto _ : state) {
-        m.C.noalias() = m.A * m.B;
-        benchmark::DoNotOptimize(m.C);
+        C.noalias() = A * B;
+        benchmark::DoNotOptimize(C);
     }
-    add_counters(state, m.C);
+    add_counters(state);
 }
-BENCHMARK(BM_matmul_eigen);
+BENCHMARK_REGISTER_F(Fixture, matmul_eigen)->SIZES;
 
-void BM_matmul_v1(benchmark::State& state) {
-    auto& m = matrices();
+BENCHMARK_DEFINE_F(Fixture, matmul_v1)(benchmark::State& state) {
     for (auto _ : state) {
-        mulled::matmul_v1(m.a_view(), m.b_view(), m.c_view());
-        benchmark::DoNotOptimize(m.C.data());
+        mulled::matmul_v1(a_view(), b_view(), c_view());
+        benchmark::DoNotOptimize(C.data());
     }
-    add_counters(state, m.C);
+    add_counters(state);
 }
-BENCHMARK(BM_matmul_v1);
+// v1 is O(n^3) with terrible cache behavior — skip the largest sizes.
+BENCHMARK_REGISTER_F(Fixture, matmul_v1)->RangeMultiplier(2)->Range(128, 1024);
 
-void BM_matmul_v2(benchmark::State& state) {
-    auto& m = matrices();
+BENCHMARK_DEFINE_F(Fixture, matmul_v2)(benchmark::State& state) {
     for (auto _ : state) {
-        mulled::matmul_v2(m.a_view(), m.b_view(), m.c_view());
-        benchmark::DoNotOptimize(m.C.data());
+        mulled::matmul_v2(a_view(), b_view(), c_view());
+        benchmark::DoNotOptimize(C.data());
     }
-    add_counters(state, m.C);
+    add_counters(state);
 }
-BENCHMARK(BM_matmul_v2);
+BENCHMARK_REGISTER_F(Fixture, matmul_v2)->SIZES;
 
-void BM_matmul_v3(benchmark::State& state) {
-    auto& m = matrices();
+BENCHMARK_DEFINE_F(Fixture, matmul_v3)(benchmark::State& state) {
     for (auto _ : state) {
-        mulled::matmul_v3(m.a_view(), m.b_view(), m.c_view());
-        benchmark::DoNotOptimize(m.C.data());
+        mulled::matmul_v3(a_view(), b_view(), c_view());
+        benchmark::DoNotOptimize(C.data());
     }
-    add_counters(state, m.C);
+    add_counters(state);
 }
-BENCHMARK(BM_matmul_v3);
+BENCHMARK_REGISTER_F(Fixture, matmul_v3)->SIZES;
 
-void BM_matmul_v4(benchmark::State& state) {
-    auto& m = matrices();
+BENCHMARK_DEFINE_F(Fixture, matmul_v4)(benchmark::State& state) {
     for (auto _ : state) {
-        mulled::matmul_v4(m.a_view(), m.b_view(), m.c_view());
-        benchmark::DoNotOptimize(m.C.data());
+        mulled::matmul_v4(a_view(), b_view(), c_view());
+        benchmark::DoNotOptimize(C.data());
     }
-    add_counters(state, m.C);
+    add_counters(state);
 }
-BENCHMARK(BM_matmul_v4);
+BENCHMARK_REGISTER_F(Fixture, matmul_v4)->SIZES;
+
+BENCHMARK_DEFINE_F(Fixture, matmul_v5)(benchmark::State& state) {
+    for (auto _ : state) {
+        mulled::matmul_v5(a_view(), b_view(), c_view());
+        benchmark::DoNotOptimize(C.data());
+    }
+    add_counters(state);
+}
+BENCHMARK_REGISTER_F(Fixture, matmul_v5)->SIZES;
+
+BENCHMARK_DEFINE_F(Fixture, matmul_v6)(benchmark::State& state) {
+    for (auto _ : state) {
+        mulled::matmul_v6(a_view(), b_view(), c_view());
+        benchmark::DoNotOptimize(C.data());
+    }
+    add_counters(state);
+}
+BENCHMARK_REGISTER_F(Fixture, matmul_v6)->SIZES;
+
+BENCHMARK_DEFINE_F(Fixture, matmul_v7)(benchmark::State& state) {
+    for (auto _ : state) {
+        mulled::matmul_v7(a_view(), b_view(), c_view());
+        benchmark::DoNotOptimize(C.data());
+    }
+    add_counters(state);
+}
+BENCHMARK_REGISTER_F(Fixture, matmul_v7)->SIZES;
+
+BENCHMARK_DEFINE_F(Fixture, matmul_v8)(benchmark::State& state) {
+    for (auto _ : state) {
+        mulled::matmul_v8(a_view(), b_view(), c_view());
+        benchmark::DoNotOptimize(C.data());
+    }
+    add_counters(state);
+}
+BENCHMARK_REGISTER_F(Fixture, matmul_v8)->SIZES;
+
+BENCHMARK_DEFINE_F(Fixture, matmul_v9)(benchmark::State& state) {
+    for (auto _ : state) {
+        mulled::matmul_v9(a_view(), b_view(), c_view());
+        benchmark::DoNotOptimize(C.data());
+    }
+    add_counters(state);
+}
+BENCHMARK_REGISTER_F(Fixture, matmul_v9)->SIZES;
